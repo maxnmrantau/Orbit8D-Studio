@@ -196,8 +196,4 @@ Orbit8D-Studio/
 
 Proyek ini dirilis di bawah lisensi [MIT License](LICENSE). Bebas digunakan, dimodifikasi, dan didistribusikan untuk kebutuhan pribadi maupun komersial.
 
----
 
-<p align="center">
-  Dibuat dengan ❤️ untuk para pecinta audio spasial 3D & 8D di seluruh dunia.
-</p>
