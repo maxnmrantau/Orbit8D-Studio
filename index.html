@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orbit8D Studio - 8D Spatial Audio Maker & Batch Converter</title>
+  <meta name="description" content="Ubah audio biasa menjadi audio 8D spasial 3 dimensi dengan efek binaural HRTF, reverb akustik, visualizer 3D real-time, dan konversi massal (batch converter).">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- JSZip for 1-Click Batch Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="header">
+    <div class="brand">
+      <img src="assets/logo.jpg" alt="Orbit8D Studio Logo" class="brand-logo">
+      <div class="brand-info">
+        <h1>ORBIT8D <span style="font-weight: 400; font-size: 0.95rem; color: var(--cyan);">STUDIO</span></h1>
+        <div class="tagline">Immersive Spatial Audio & Batch Engine</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tabStudio" id="tabBtnStudio">
+        <span>🎧</span> Studio Live Editor
+      </button>
+      <button class="tab-btn" data-tab="tabBatch" id="tabBtnBatch">
+        <span>⚡</span> Batch Converter
+      </button>
+    </nav>
+
+    <div class="header-right" style="display: flex; align-items: center; gap: 12px;">
+      <!-- Headphone Recommendation Badge -->
+      <div class="headphone-notice">
+        <div class="pulse-dot"></div>
+        <span>🎧 Wajib Gunakan Headphone</span>
+      </div>
+
+      <!-- Tombol Panduan -->
+      <button class="btn btn-secondary" id="btnOpenGuide" title="Buka Panduan Penggunaan & Menu Efek" style="border-color: var(--border-active); background: rgba(0, 242, 254, 0.1); color: #fff;">
+        <span>📖</span> Panduan
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-wrapper">
+
+    <!-- ====================================================================
+         TAB 1: STUDIO LIVE EDITOR
+         ==================================================================== -->
+    <section id="tabStudio" class="tab-content active">
+      
+      <!-- Studio Grid: Visualizer + Controls -->
+      <div class="studio-grid">
+        
+        <!-- Left: 3D Spatial Radar Visualizer -->
+        <div class="card radar-panel">
+          <div class="card-header" style="width: 100%;">
+            <div class="card-title">
+              <span class="card-title-icon">🌐</span> 3D Spatial Radar & Visualizer
+            </div>
+            <!-- Preset Quick Selector -->
+            <div class="presets-bar">
+              <button class="preset-chip active" data-preset="classic" title="Orbit seimbang & santai">Classic 8D</button>
+              <button class="preset-chip" data-preset="fast" title="Rotasi cepat berenergi">Fast Dynamic</button>
+              <button class="preset-chip" data-preset="cinematic" title="Pola angka 8 & reverb megah">Cinematic 8D</button>
+              <button class="preset-chip" data-preset="pendulum" title="Ayunan kiri-kanan">Pendulum</button>
+              <button class="preset-chip" data-preset="asmr" title="Jarak dekat & intim">ASMR & Chill</button>
+            </div>
+          </div>
+
+          <!-- Canvas Visualizer Container -->
+          <div class="radar-canvas-container">
+            <canvas id="radarCanvas"></canvas>
+          </div>
+
+          <!-- Radar Legend & Tips -->
+          <div class="radar-legend">
+            <div class="legend-item">
+              <span class="legend-dot orb"></span>
+              <span>Sumber Suara 8D (Dapat Digeser)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot head"></span>
+              <span>Kepala Anda (Pendengar)</span>
+            </div>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
+            💡 <em>Tips: Klik & tahan titik 8D untuk menggeser suara secara manual. Klik 2x untuk kembali ke rotasi otomatis.</em>
+          </div>
+        </div>
+
+        <!-- Right: 8D Sound Engine Controls -->
+        <div class="card controls-panel">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-title-icon">🎛️</span> 8D DSP Sound Engine
+            </div>
+          </div>
+
+          <!-- Section 1: Motion & Orbit -->
+          <div class="control-section">
+            <div class="section-label">
+              <span>🌀</span> Orbit & Pergerakan Spasial
+            </div>
+
+            <!-- Rotation Speed -->
+            <div class="control-row">
+              <div class="control-header">
+                <span>Kecepatan Putaran (Orbit Speed)</span>
+                <span class="control-value" id="speedVal">12s</span>
+              </div>
+              <input type="range" id="speedSlider" min="3" max="30" step="1" value="12">
+            </div>
+
+            <!-- Orbit Pattern -->
+            <div class="control-row">
+              <div class="control-header">
+                <span>Pola Lintasan Orbit</span>
+              </div>
+              <div class="button-group">
+                <button class="group-btn active" data-pattern="circle">
+                  <span>⭕ Circle 360°</span>
+                </button>
+                <button class="group-btn" data-pattern="figure8">
+                  <span>♾️ Figure-8</span>
+                </button>
+                <button class="group-btn" data-pattern="pendulum">
+                  <span>↔️ Pendulum</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Direction -->
+            <div class="control-row">
+              <div class="control-header">
+                <span>Arah Rotasi</span>
+              </div>
+              <div class="direction-switch">
+                <button class="group-btn active" data-direction="1">
+                  <span>↻ Searah Jarum Jam</span>
+                </button>
+                <button class="group-btn" data-direction="-1">
+                  <span>↺ Berlawanan</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Orbit Radius & Elevation -->
+            <div class="control-row">
+              <div class="control-header">
+                <span>Radius Jarak (Distance)</span>
+                <span class="control-value" id="radiusVal">2.5m</span>
+              </div>
+              <input type="range" id="radiusSlider" min="0.8" max="4.0" step="0.1" value="2.5">
+            </div>
+
+            <div class="control-row">
+              <div class="control-header">
+                <span>Elevasi Vertikal (Tinggi 3D)</span>
+                <span class="control-value" id="elevationVal">+0.3m</span>
+              </div>
+              <input type="range" id="elevationSlider" min="-0.8" max="1.5" step="0.1" value="0.3">
+            </div>
+          </div>
+
+          <hr style="border: 0; border-top: 1px solid var(--border-subtle);">
+
+          <!-- Section 2: Acoustic Room & Reverb -->
+          <div class="control-section">
+            <div class="section-label">
+              <span>🏛️</span> Akustik Ruang & Filter Telinga
+            </div>
+
+            <!-- Room Reverb Type -->
+            <div class="control-row">
+              <div class="control-header">
+                <span>Tipe Ruangan (Acoustic Space)</span>
+              </div>
+              <select id="reverbTypeSelect" class="select-input">
+                <option value="hall" selected>Concert Hall (Ruang Konser Megah)</option>
+                <option value="room">Studio Room (Akustik Hangat)</option>
+                <option value="cathedral">Cathedral (Gema Katedral Tinggi)</option>
+                <option value="space">Cosmic Void (Ruang Hampa Luas)</option>
+              </select>
+            </div>
+
+            <!-- Reverb Mix -->
+            <div class="control-row">
+              <div class="control-header">
+                <span>Intensitas Reverb (Wet Mix)</span>
+                <span class="control-value" id="reverbMixVal">30%</span>
+              </div>
+              <input type="range" id="reverbMixSlider" min="0.0" max="0.75" step="0.01" value="0.30">
+            </div>
+
+            <!-- Dynamic Head Shadowing Filter -->
+            <div class="toggle-row">
+              <div>
+                <div style="font-size: 0.88rem; font-weight: 600;">Head-Shadowing (Simulasi Daun Telinga)</div>
+                <div style="font-size: 0.74rem; color: var(--text-muted);">Meredam frekuensi tinggi otomatis saat suara di belakang kepala</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="headShadowToggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <!-- Bass Boost -->
+            <div class="control-row">
+              <div class="control-header">
+                <span>Bass Preserver (Low-End Boost)</span>
+                <span class="control-value" id="bassBoostVal">+3.0dB</span>
+              </div>
+              <input type="range" id="bassBoostSlider" min="0.0" max="8.0" step="0.5" value="3.0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Master Audio Player & Export Deck -->
+      <div class="master-deck">
+        <div class="deck-top-row">
+          <!-- Track Info -->
+          <div class="track-info">
+            <div class="track-icon">🎵</div>
+            <div class="track-details">
+              <div class="track-title" id="trackTitle">Belum Ada Audio yang Dimuat</div>
+              <div class="track-status" id="trackStatus">Silakan pilih file audio atau coba sampel demo</div>
+            </div>
+          </div>
+
+          <!-- File Buttons -->
+          <div class="file-actions">
+            <input type="file" id="fileInput" accept="audio/*" style="display: none;">
+            <button class="btn btn-secondary" id="btnUpload" title="Buka file MP3/WAV/FLAC">
+              <span>📁</span> Pilih Audio
+            </button>
+            <button class="btn btn-primary" id="btnDemoTrack" title="Uji langsung dengan musik demo instan">
+              <span>✨</span> Coba Demo Musik
+            </button>
+            <button class="btn btn-export" id="btnExportSingle" title="Render & Download Audio 8D">
+              <span>⬇️</span> Export 8D Audio (WAV)
+            </button>
+          </div>
+        </div>
+
+        <!-- Player Seekbar & Transport Controls -->
+        <div class="deck-controls-row">
+          <button class="play-pause-btn" id="playPauseBtn" title="Play / Pause">
+            <span id="playIcon">▶</span>
+            <span id="pauseIcon" style="display: none;">⏸</span>
+          </button>
+
+          <div class="timeline-container">
+            <span class="time-stamp" id="currentTime">0:00</span>
+            <input type="range" id="seekBar" min="0" max="100" value="0" step="0.1">
+            <span class="time-stamp" id="totalDuration">0:00</span>
+          </div>
+
+          <div class="deck-volume-control">
+            <span>🔊</span>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.9">
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         TAB 2: BATCH CONVERTER (KONVERSI MASSAL)
+         ==================================================================== -->
+    <section id="tabBatch" class="tab-content">
+      <div class="batch-container">
+        
+        <!-- Multi-File Dropzone -->
+        <div class="dropzone" id="batchDropzone">
+          <input type="file" id="batchFileInput" multiple accept="audio/*" style="display: none;">
+          <div class="dropzone-icon">⚡</div>
+          <div class="dropzone-title">Tarik & Lepaskan File Audio di Sini untuk Batch Convert</div>
+          <div class="dropzone-desc">Mendukung banyak file sekaligus (MP3, WAV, FLAC, M4A, OGG). Semua file akan dikonversi menjadi audio 8D berkualitas tinggi.</div>
+          <button class="btn btn-primary" style="margin-top: 10px;">
+            <span>📂</span> Telusuri File dari Komputer
+          </button>
+        </div>
+
+        <!-- Batch Action Bar -->
+        <div class="batch-actions-bar">
+          <div class="batch-stats">
+            <div>Total Antrean: <strong id="queueCount">0</strong> lagu</div>
+            <div>Selesai Dikonversi: <strong id="completedCount">0</strong> lagu</div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="btn btn-secondary" id="btnClearBatch">
+              <span>🗑️</span> Kosongkan Antrean
+            </button>
+            <button class="btn btn-primary" id="btnStartBatch" disabled>
+              <span>⚡</span> Mulai Konversi Semua
+            </button>
+            <button class="btn btn-export" id="btnDownloadAllZip" disabled>
+              <span>📦</span> Download Semua (ZIP)
+            </button>
+          </div>
+        </div>
+
+        <!-- Batch Queue Table -->
+        <div class="queue-table-container">
+          <table class="queue-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th>Nama Lagu</th>
+                <th style="width: 110px;">Ukuran</th>
+                <th style="width: 90px;">Durasi</th>
+                <th style="width: 140px;">Status</th>
+                <th style="width: 160px;">Progress</th>
+                <th style="width: 110px; text-align: center;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="batchTableBody">
+              <tr id="batchEmptyState">
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                  Belum ada file dalam antrean. Silakan tarik atau pilih beberapa file lagu di atas.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Guide & Documentation Modal Dialog -->
+  <div class="modal-backdrop" id="guideModal">
+    <div class="modal-box guide-modal-box">
+      <div class="guide-modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5rem;">📖</span>
+          <div>
+            <h2 style="font-family: var(--font-display); font-size: 1.3rem; color: #fff;">Panduan Penggunaan Orbit8D Studio</h2>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Panduan lengkap pengoperasian aplikasi, menu efek spasial, dan konversi massal</div>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnCloseGuide" title="Tutup Panduan">✕</button>
+      </div>
+
+      <div class="guide-modal-body">
+        <!-- Section 1: Headphone notice -->
+        <div class="guide-card highlight">
+          <div class="guide-card-title">
+            <span>🎧</span> 1. Syarat Utama: Wajib Menggunakan Headphone / Earphone
+          </div>
+          <p class="guide-card-text">
+            Efek <strong>Audio 8D</strong> adalah ilusi psikoakustik yang bekerja dengan memodulasi waktu jeda antar-telinga (<em>Interaural Time Difference</em>) dan frekuensi spasial binaural. Efek ini <strong>hanya dapat dinikmati jika kanal kiri dan kanan terpisah langsung ke telinga</strong>. Jika menggunakan speaker eksternal biasa, suara kiri dan kanan akan bercampur di udara sehingga efek 3D tidak akan terasa.
+          </p>
+        </div>
+
+        <!-- Section 2: Quickstart -->
+        <div class="guide-card">
+          <div class="guide-card-title">
+            <span>🚀</span> 2. Panduan Singkat 3 Langkah (Quickstart)
+          </div>
+          <ol class="guide-list-numbered">
+            <li><strong>Muat Lagu</strong>: Klik tombol <code>📁 Pilih Audio</code> untuk memilih lagu Anda sendiri (MP3, WAV, FLAC, dll) atau klik <code>✨ Coba Demo Musik</code> untuk mendengar sampel melodi langsung.</li>
+            <li><strong>Pilih Preset atau Atur Efek</strong>: Pilih salah satu preset cepat (misal: <em>Classic 8D</em> atau <em>Cinematic 8D</em>) atau ubah slider kecepatan, arah, dan reverb sesuai selera.</li>
+            <li><strong>Ekspor Lagu</strong>: Klik tombol <code>⬇️ Export 8D Audio (WAV)</code>. Audio 8D akan dirender cepat dalam hitungan detik dan otomatis terunduh ke komputer Anda.</li>
+          </ol>
+        </div>
+
+        <!-- Section 3: Radar Visualizer -->
+        <div class="guide-card">
+          <div class="guide-card-title">
+            <span>🌐</span> 3. Mengenal 3D Spatial Radar Visualizer
+          </div>
+          <p class="guide-card-text">
+            Radar visualizer di panel kiri menampilkan sudut pandang dari atas kepala Anda (top-down view):
+          </p>
+          <ul class="guide-list-bullet">
+            <li><strong>Simbol 'YOU' di Tengah</strong>: Mewakili kepala Anda dengan headphone. Tanda segitiga mengarah ke depan (<strong>FRONT</strong>).</li>
+            <li><strong>Titik Orb Bercahaya (8D)</strong>: Posisi suara yang sedang mengorbit secara dinamis.</li>
+            <li><strong>Interaksi Geser Manual (Drag & Drop)</strong>: Anda bisa <strong>mengeklik dan menahan titik suara</strong> untuk memindahkannya ke posisi mana pun di ruang 3D secara manual.</li>
+            <li><strong>Kembali ke Rotasi Otomatis</strong>: Cukup <strong>klik dua kali (double-click)</strong> di area radar untuk melanjutkan putaran otomatis.</li>
+          </ul>
+        </div>
+
+        <!-- Section 4: DSP Menus -->
+        <div class="guide-card">
+          <div class="guide-card-title">
+            <span>🎛️</span> 4. Penjelasan Seluruh Menu Efek & Sound Engine
+          </div>
+          
+          <div class="guide-effects-grid">
+            <div class="guide-effect-item">
+              <div class="effect-name">🌀 Kecepatan Putaran (Speed)</div>
+              <div class="effect-desc">Mengatur berapa lama waktu yang dibutuhkan untuk 1 putaran 360° penuh. Nilai 10s–14s memberikan sensasi santai, sedangkan 5s–7s cocok untuk lagu EDM yang energik.</div>
+            </div>
+
+            <div class="effect-item">
+              <div class="effect-name">⭕ Pola Lintasan (Orbit Pattern)</div>
+              <div class="effect-desc">
+                &bull; <strong>Circle 360°</strong>: Putaran melingkar stabil mengelilingi kepala.<br>
+                &bull; <strong>Figure-8 (Infinity)</strong>: Pola angka 8 melintasi depan dan belakang kepala.<br>
+                &bull; <strong>Pendulum</strong>: Suara mengayun bolak-balik dari telinga kiri ke kanan.
+              </div>
+            </div>
+
+            <div class="effect-item">
+              <div class="effect-name">↻ Arah Rotasi (Direction)</div>
+              <div class="effect-desc">Pilihan rotasi searah jarum jam (Kiri &rarr; Depan &rarr; Kanan &rarr; Belakang) atau berlawanan jarum jam.</div>
+            </div>
+
+            <div class="effect-item">
+              <div class="effect-name">📏 Radius Jarak (Distance)</div>
+              <div class="effect-desc">Mengatur seberapa jauh suara terasa dari telinga (0.8 meter sangat dekat dan intim, hingga 4.0 meter terasa luas dan megah).</div>
+            </div>
+
+            <div class="effect-item">
+              <div class="effect-name">📐 Elevasi Vertikal (3D Height)</div>
+              <div class="effect-desc">Memberikan dimensi ketinggian, suara terasa melayang sedikit di atas kepala atau di bawah dagu.</div>
+            </div>
+
+            <div class="effect-item">
+              <div class="effect-name">🏛️ Akustik Ruang (Reverb Type & Mix)</div>
+              <div class="effect-desc">Memberikan pantulan gema alami. Pilihan ruang: <em>Concert Hall</em> (ruang konser), <em>Studio Room</em> (hangat), <em>Cathedral</em> (luas & bergema), dan <em>Cosmic Void</em> (ruang angkasa). Slider Wet Mix mengatur persentase gema.</div>
+            </div>
+
+            <div class="effect-item">
+              <div class="effect-name">👂 Head-Shadowing (Simulasi Daun Telinga)</div>
+              <div class="effect-desc">Fitur filter pintar yang otomatis menyaring frekuensi tinggi saat posisi suara berada di belakang kepala, meniru penyerapan akustik fisik daun telinga manusia.</div>
+            </div>
+
+            <div class="effect-item">
+              <div class="effect-name">🔊 Bass Preserver (Low-End Boost)</div>
+              <div class="effect-desc">Mencegah dentuman kick drum dan bass 808 terasa tipis saat berpindah kanal, menjaga lagu tetap solid dan bertenaga.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Batch Converter -->
+        <div class="guide-card">
+          <div class="guide-card-title">
+            <span>⚡</span> 5. Panduan Batch Converter (Konversi Banyak Lagu Sekaligus)
+          </div>
+          <ol class="guide-list-numbered">
+            <li>Buka tab <strong>"⚡ Batch Converter"</strong> di navigasi atas.</li>
+            <li>Tarik & lepaskan beberapa file audio sekaligus ke dalam kotak <em>Dropzone</em> (misal 5, 10, atau 50 lagu).</li>
+            <li>Klik tombol <strong>"⚡ Mulai Konversi Semua"</strong>. Mesin <em>OfflineAudioContext</em> akan merender setiap lagu dalam hitungan detik.</li>
+            <li>Setelah semua selesai, klik tombol <strong>"📦 Download Semua (ZIP)"</strong> untuk mengunduh seluruh file 8D sekaligus dalam 1 arsip ZIP yang rapi.</li>
+          </ol>
+        </div>
+
+        <!-- Section 6: Presets Summary -->
+        <div class="guide-card">
+          <div class="guide-card-title">
+            <span>🌟</span> 6. Karakteristik Preset Cepat
+          </div>
+          <ul class="guide-list-bullet">
+            <li><strong>Classic 8D</strong>: Putaran 12 detik, reverb hall sedang. Karakter paling populer dan seimbang untuk semua genre musik.</li>
+            <li><strong>Fast Dynamic</strong>: Putaran 6 detik, bass boost ekstra. Sangat direkomendasikan untuk EDM, Trap, dan Pop bertenaga.</li>
+            <li><strong>Cinematic 8D</strong>: Pola angka 8 melayang dengan reverb katedral yang megah. Cocok untuk orkestra, akustik, dan instrumental.</li>
+            <li><strong>Pendulum</strong>: Ayunan kiri-kanan secara bertahap. Cocok untuk vokal dan podcast spasial.</li>
+            <li><strong>ASMR & Chill</strong>: Jarak orbit dekat (1.2m) dengan gema lembut untuk pengalaman yang intim dan rileks.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="guide-modal-footer">
+        <button class="btn btn-primary" id="btnGotItGuide" style="padding: 10px 24px;">
+          ✓ Mengerti & Mulai Menggunakan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Rendering Modal Dialog -->
+  <div class="modal-backdrop" id="exportModal">
+    <div class="modal-box">
+      <div class="modal-spinner"></div>
+      <h3 style="font-family: var(--font-display); font-size: 1.25rem;">Merender Audio 8D</h3>
+      <p id="exportStatusText" style="color: var(--text-secondary); font-size: 0.88rem;">
+        Menyiapkan DSP 8D & HRTF Spatialization...
+      </p>
+      
+      <div style="width: 100%; height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; margin-top: 6px;">
+        <div id="exportProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--violet)); transition: width 0.15s ease;"></div>
+      </div>
+      
+      <div id="exportPercent" style="font-family: monospace; font-size: 1rem; color: var(--cyan); font-weight: 700;">
+        0%
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div><strong>Orbit8D Studio</strong> &copy; 2026. 100% Client-Side Web Audio DSP. Audio Anda aman dan tidak pernah diunggah ke server mana pun.</div>
+    <div>Akselerasi HRTF 3D &middot; Batch Audio Engine</div>
+  </footer>
+
+  <!-- Core JavaScript Modules -->
+  <script src="js/audio-engine.js"></script>
+  <script src="js/visualizer.js"></script>
+  <script src="js/batch-processor.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
